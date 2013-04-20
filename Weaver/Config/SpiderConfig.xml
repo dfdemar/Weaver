@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE configuration [
+  <!ELEMENT configuration ANY>
+  <!ELEMENT item ANY>
+  <!ATTLIST item id ID #REQUIRED>
+]>
+<configuration>
+  <item id="MaximumDepth">2</item>
+  <item id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</item>
+  <item id="ExcludedDomains">
+    google.com
+    facebook.com
+    twitter.com
+    creativecommons.org
+  </item>
+  <item id="UseLogging">True</item>
+</configuration>
