@@ -6,28 +6,50 @@ using System.Xml;
 
 namespace Weaver
 {
-    static class SpiderController
+    public static class SpiderController
     {
         private static XmlDocument xmlDoc;
-        public static readonly int maxDepth { get; private set; }
-        public static readonly bool UseLogging { get; private set; }
 
-        public static readonly List<string> ExcludedFileTypes { get; private set; }
-        public static readonly List<string> ExcludedDomains { get; private set; }
+        public static int MaxDepth { get; private set; }
+        public static int MaxThreads { get; private set; }
+        public static bool UseLogging { get; private set; }
+
+        public static List<string> ExcludedFileTypes { get; private set; }
+        public static List<string> ExcludedDomains { get; private set; }
 
         static SpiderController()
         {
             xmlDoc = new XmlDocument();
             xmlDoc.Load("SpiderConfig.xml");
 
-            maxDepth = Int32.Parse(xmlDoc.GetElementById("MaximumDepth").InnerText);
+            MaxDepth = Int32.Parse(xmlDoc.GetElementById("MaximumDepth").InnerText);
+            MaxThreads = Int32.Parse(xmlDoc.GetElementById("MaximumThreads").InnerText);
             ExcludedFileTypes = xmlDoc.GetElementById("ExcludedFileTypes").InnerText.Split('|').ToList<string>();
-            ExcludedDomains = xmlDoc.GetElementById("ExcludedDomains").InnerText.Split(';').ToList<string>();
+            ExcludedDomains = xmlDoc.GetElementById("ExcludedDomains").InnerText.Split(new char[]{',',' ', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            UseLogging = Boolean.Parse(xmlDoc.GetElementById("UseLogging").InnerText);
         }
 
         public static bool ShouldContinue(int currentDepth)
         {
-            return currentDepth < maxDepth;
+            return currentDepth < MaxDepth;
+        }
+
+        public static bool IsExcludedDomain(string url)
+        {
+            bool isExcluded = false;
+
+            lock(ExcludedDomains)
+            {
+                foreach (string domain in ExcludedDomains)
+                {
+                    if (url.Contains(domain))
+                    {
+                        isExcluded = true;
+                        break;
+                    }
+                }
+            }
+            return isExcluded;
         }
     }
 }

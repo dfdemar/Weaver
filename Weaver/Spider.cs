@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Weaver
 {
@@ -10,29 +11,31 @@ namespace Weaver
     {
         private Queue<Url> queuedURLs { get; set; }
         private List<String> visitedURLs { get; set; }
-        private Log log { get; set; }
+        private int threadCount { get; set; }
 
         public Spider()
         {
             this.queuedURLs = new Queue<Url>();
             this.visitedURLs = new List<string>();
-            this.log = new Log();
+            this.threadCount = 0;
         }
 
         public void Go(string link)
         {
             Url url = new Url { name = link, depth = 0 };
-            FetchNewPage(url);
+            new Thread(() => FetchNewPage(url)).Start();
         }
 
         private void FetchNewPage(Url url)
         {
+            Log.ThreadCount(++threadCount);
+
             NetworkConnection connection = new NetworkConnection();
-            string html = connection.Go(url.name, log);
+            string html = connection.Go(url.name);
 
             if (!String.IsNullOrEmpty(html))
             {
-                log.LoadSuccess(url.name);
+                Log.LoadSuccess(url.name);
                 this.visitedURLs.Add(url.name);
                 Crawl(html, url);
             }
@@ -63,7 +66,7 @@ namespace Weaver
                 url = html.Substring(start, end - start);
                 startLocation = end;
 
-                log.FoundURL(url);
+                Log.FoundURL(url);
                 AddToQueue(url, depth + 1);
             }
             return url;
@@ -73,20 +76,30 @@ namespace Weaver
         {
             while (this.queuedURLs.Count > 0)
             {
-                Url url = this.queuedURLs.Dequeue();
+                Url url = new Url();
+
+                lock (this.queuedURLs)
+                    url = this.queuedURLs.Dequeue();
+
                 if (SpiderController.ShouldContinue(url.depth))
-                    FetchNewPage(new Url { name = url.name, depth = url.depth });
+                    new Thread(() => FetchNewPage(url)).Start();
             }
+            --threadCount;
+            Thread.Sleep(50);
         }
 
         private void AddToQueue(string link, int newDepth)
         {
-            if (this.visitedURLs.Contains(link))
-                log.SkippedThisURL(link);
+            if (this.visitedURLs.Contains(link) || this.queuedURLs.Any(q => q.name == link))
+                Log.SkippedThisQueuedURL(link);
+            else if (SpiderController.IsExcludedDomain(link))
+                Log.SkippedThisExcludedURL(link);
             else
             {
-                this.queuedURLs.Enqueue(new Url { name = link, depth = newDepth });
-                log.EngueuedURL(link);
+                lock (this.queuedURLs)
+                    this.queuedURLs.Enqueue(new Url { name = link, depth = newDepth });
+
+                Log.EngueuedURL(link);
             }
         }
     }

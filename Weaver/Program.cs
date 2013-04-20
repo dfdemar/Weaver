@@ -12,7 +12,7 @@ namespace Weaver
     {
         static void Main(string[] args)
         {
-            string url = "http://www.isfdb.org/cgi-bin/pl.cgi?359157";
+            string url = "http://orthodoxinfo.com/";
 
             if (String.IsNullOrEmpty(url))
             {

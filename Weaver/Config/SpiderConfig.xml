@@ -1,17 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE configuration [
   <!ELEMENT configuration ANY>
-  <!ELEMENT item ANY>
-  <!ATTLIST item id ID #REQUIRED>
+  <!ELEMENT setting ANY>
+  <!ATTLIST setting id ID #REQUIRED>
 ]>
 <configuration>
-  <item id="MaximumDepth">2</item>
-  <item id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</item>
-  <item id="ExcludedDomains">
-    google.com
-    facebook.com
-    twitter.com
-    creativecommons.org
-  </item>
-  <item id="UseLogging">True</item>
+  <setting id="MaximumDepth">2</setting>
+  <setting id="MaximumThreads">10</setting>
+  <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
+  <setting id="ExcludedDomains">
+    google.com,
+    facebook.com,
+    wikipedia.org,
+    twitter.com,
+    creativecommons.org,
+    pinterest.com,
+    reddit.com,
+    vimeo.com,
+    youtube.com,
+    microsoft.com
+  </setting>
+  <setting id="UseLogging">True</setting>
 </configuration>

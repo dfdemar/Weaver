@@ -9,15 +9,15 @@ namespace Weaver
 {
     class NetworkConnection
     {
-        public string Go(string url, Log log)
+        public string Go(string url)
         {
-            return ReadPage(GetResponse(url, log));
+            return ReadPage(GetResponse(url));
         }
 
-        private HttpWebResponse GetResponse(string url, Log log)
+        private HttpWebResponse GetResponse(string url)
         {
             HttpWebResponse response = null;
-            log.LoadingNewPage(url);
+            Log.LoadingNewPage(url);
 
             try
             {
