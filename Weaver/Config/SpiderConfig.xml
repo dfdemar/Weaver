@@ -7,18 +7,26 @@
 <configuration>
   <setting id="MaximumDepth">2</setting>
   <setting id="MaximumThreads">10</setting>
-  <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
-  <setting id="ExcludedDomains">
-    google.com,
-    facebook.com,
-    wikipedia.org,
-    twitter.com,
-    creativecommons.org,
-    pinterest.com,
-    reddit.com,
-    vimeo.com,
-    youtube.com,
-    microsoft.com
-  </setting>
   <setting id="UseLogging">True</setting>
+  <setting id="ThreadIdleTime">5000</setting>
+  <setting id="FileTypesToDownload">.jpg|.jpeg|.png</setting>
+  <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.gif|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.torrent|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
+  <setting id="ExcludedDomains">
+    google.com
+    facebook.com
+    wikipedia.org
+    twitter.com
+    creativecommons.org
+    pinterest.com
+    reddit.com
+    vimeo.com
+    youtube.com
+    microsoft.com
+    apple.com
+    cnn.com
+    goodreads.com
+    stackoverflow.com
+    thepiratebay.se
+    amazon.com
+  </setting>
 </configuration>

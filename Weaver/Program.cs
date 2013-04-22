@@ -12,7 +12,7 @@ namespace Weaver
     {
         static void Main(string[] args)
         {
-            string url = "http://orthodoxinfo.com/";
+            string url = "http://ski-ffy.blogspot.com/";
 
             if (String.IsNullOrEmpty(url))
             {
@@ -23,6 +23,7 @@ namespace Weaver
 
             Spider spider = new Spider();
             spider.Go(url);
+            Console.ReadLine();
         }
     }
 }

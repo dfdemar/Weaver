@@ -63,12 +63,19 @@ namespace Weaver
         {
             string html = String.Empty;
 
-            using(Stream inputStream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(inputStream))
+            try
             {
-                html = reader.ReadToEnd();
+                using (Stream inputStream = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(inputStream))
+                {
+                    html = reader.ReadToEnd();
+                }
+                response.Dispose();
             }
-            response.Dispose();
+            catch(NullReferenceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return html;
         }

@@ -13,9 +13,11 @@ namespace Weaver
         public static int MaxDepth { get; private set; }
         public static int MaxThreads { get; private set; }
         public static bool UseLogging { get; private set; }
+        public static int ThreadIdleTime { get; private set; }
 
         public static List<string> ExcludedFileTypes { get; private set; }
         public static List<string> ExcludedDomains { get; private set; }
+        public static List<string> FileTypesToDownload { get; private set; }
 
         static SpiderController()
         {
@@ -24,9 +26,13 @@ namespace Weaver
 
             MaxDepth = Int32.Parse(xmlDoc.GetElementById("MaximumDepth").InnerText);
             MaxThreads = Int32.Parse(xmlDoc.GetElementById("MaximumThreads").InnerText);
+            UseLogging = Boolean.Parse(xmlDoc.GetElementById("UseLogging").InnerText);
+            ThreadIdleTime = Int32.Parse(xmlDoc.GetElementById("ThreadIdleTime").InnerText);
+
             ExcludedFileTypes = xmlDoc.GetElementById("ExcludedFileTypes").InnerText.Split('|').ToList<string>();
             ExcludedDomains = xmlDoc.GetElementById("ExcludedDomains").InnerText.Split(new char[]{',',' ', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            UseLogging = Boolean.Parse(xmlDoc.GetElementById("UseLogging").InnerText);
+            FileTypesToDownload = xmlDoc.GetElementById("FileTypesToDownload").InnerText.Split('|').ToList<string>();
+            
         }
 
         public static bool ShouldContinue(int currentDepth)
@@ -38,11 +44,39 @@ namespace Weaver
         {
             bool isExcluded = false;
 
-            lock(ExcludedDomains)
+            try
             {
-                foreach (string domain in ExcludedDomains)
+                Uri uri = new Uri(url.ToLower());
+
+                lock (ExcludedDomains)
                 {
-                    if (url.Contains(domain))
+                    foreach (string domain in ExcludedDomains)
+                    {
+                        if (uri.Authority.Contains(domain.ToLower()))
+                        {
+                            isExcluded = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch(UriFormatException ex)
+            {
+                Console.WriteLine(ex.Message);
+                isExcluded = true;
+            }
+            return isExcluded;
+        }
+
+        public static bool IsExcludedFileType(string url)
+        {
+            bool isExcluded = false;
+
+            lock (ExcludedFileTypes)
+            {
+                foreach (string fileType in ExcludedFileTypes)
+                {
+                    if (url.ToLower().EndsWith(fileType.ToLower()))
                     {
                         isExcluded = true;
                         break;
@@ -50,6 +84,24 @@ namespace Weaver
                 }
             }
             return isExcluded;
+        }
+
+        public static bool ShouldDownload(string url)
+        {
+            bool downloadMe = false;
+
+            lock (FileTypesToDownload)
+            {
+                foreach (string fileType in FileTypesToDownload)
+                {
+                    if (url.ToLower().EndsWith(fileType.ToLower()))
+                    {
+                        downloadMe = true;
+                        break;
+                    }
+                }
+            }
+            return downloadMe;
         }
     }
 }

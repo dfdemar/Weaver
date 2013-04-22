@@ -16,7 +16,7 @@ namespace Weaver
             file = "SpiderLog.txt";
         }
 
-        private static void WriteToLog(string entry, string url = "")
+        public static void WriteToLog(string entry, string url = "")
         {
             Console.WriteLine("[{0}]: {1}: {2}", DateTime.Now, entry, url);
             string line = String.Format("{0,-25}{1,-40}{2}", "["+DateTime.Now+"]", entry, url);
@@ -50,17 +50,27 @@ namespace Weaver
 
         public static void SkippedThisExcludedURL(string url)
         {
-            WriteToLog("Skipping...URL domain is excluded");
+            WriteToLog("Skipping...URL domain is excluded", url);
+        }
+
+        public static void SkippedThisExcludedFileType(string url)
+        {
+            WriteToLog("Skipping...file type is excluded", url);
         }
 
         public static void EngueuedURL(string url)
         {
-            WriteToLog("Enqueuing", url);
+            WriteToLog("Queuing", url);
         }
 
         public static void ThreadCount(int count)
         {
-            WriteToLog(String.Format("Number of current threads: {0}", count));
+            WriteToLog(String.Format("Threads running: {0}", count));
+        }
+
+        public static void DownloadedFile(string filename)
+        {
+            WriteToLog("Downloaded", filename);
         }
     }
 }
