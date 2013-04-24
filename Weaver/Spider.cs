@@ -11,20 +11,21 @@ namespace Weaver
     public class Spider
     {
         private Queue<Url> URLQueue { get; set; }
-        private List<String> visitedURLs { get; set; }
+        private HashSet<String> UrlsSeen { get; set; }
         private int threadCount { get; set; }
 
         public Spider()
         {
             this.URLQueue = new Queue<Url>();
-            this.visitedURLs = new List<string>();
+            this.UrlsSeen = new HashSet<String>();
             this.threadCount = 0;
         }
 
         public void Go(string link)
         {
-            Url url = new Url { name = link, depth = 0 };
-            new Thread(() => FetchNewPage(url)).Start();
+            Url url = new Url(link, 0);
+            this.UrlsSeen.Add(url.uri.AbsoluteUri);
+            ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
         }
 
         private void FetchNewPage(Url url)
@@ -32,45 +33,29 @@ namespace Weaver
             Log.ThreadCount(++threadCount);
 
             NetworkConnection connection = new NetworkConnection();
-            string html = connection.Go(url.name);
+            Page page = new Page(url, connection.Go(url));
 
-            if (!String.IsNullOrEmpty(html))
+            if (!String.IsNullOrEmpty(page.source))
             {
-                Log.LoadSuccess(url.name);
-                this.visitedURLs.Add(url.name);
-                Crawl(html, url);
+                Log.LoadSuccess(url.uri.AbsoluteUri);
+                Crawl(page);
             }
             LoadNextURL();
         }
 
-        private void Crawl(string html, Url url, int currentLocation = 0)
+        private void Crawl(Page page)
         {
-            string link = FindLink(html, ref currentLocation, url.depth);
+            page.FetchAllUrls(page.url.depth);
 
-            if (!String.IsNullOrEmpty(link))
+            if (page.UrlList.Count > 0)
             {
-                Crawl(html, url, currentLocation);
+                foreach (Url url in page.UrlList)
+                    HandleURL(url);
             }
             else
-                Console.WriteLine("No link found.");
-        }
+                Console.WriteLine("No links found.");
 
-        private string FindLink(string html, ref int startLocation, int depth)
-        {
-            string url = null;
-
-            int index = html.ToLower().IndexOf("href=\"http", startLocation);
-            if (index != -1)
-            {
-                int start = html.IndexOf('"', index) + 1;
-                int end = html.IndexOf('"', start);
-                url = html.Substring(start, end - start);
-                startLocation = end;
-
-                Log.FoundURL(url);
-                HandleURL(url, depth + 1);
-            }
-            return url;
+            Console.WriteLine("Finished crawling page.");
         }
 
         private void LoadNextURL()
@@ -80,21 +65,25 @@ namespace Weaver
                 Url url = new Url();
 
                 lock (this.URLQueue)
-                    url = this.URLQueue.Dequeue();
+                {
+                    if (this.URLQueue.Count > 0)
+                        url = this.URLQueue.Dequeue();
+                }
 
                 if (SpiderController.ShouldContinue(url.depth))
                 {
                     Thread.Sleep(SpiderController.ThreadIdleTime);
-                    new Thread(() => FetchNewPage(url)).Start();
+                    ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
                 }
             }
-            Thread.Sleep(SpiderController.ThreadIdleTime);
             --threadCount;
         }
 
-        private void HandleURL(string link, int newDepth)
+        private void HandleURL(Url url)
         {
-            if (this.visitedURLs.Contains(link) || this.URLQueue.Any(q => q.name == link))
+            string link = url.uri.AbsoluteUri;
+
+            if (this.UrlsSeen.Contains(link))
                 Log.SkippedThisQueuedURL(link);
             else if (SpiderController.IsExcludedDomain(link))
                 Log.SkippedThisExcludedURL(link);
@@ -105,7 +94,13 @@ namespace Weaver
             else
             {
                 lock (this.URLQueue)
-                    this.URLQueue.Enqueue(new Url { name = link, depth = newDepth });
+                {
+                    lock (this.UrlsSeen)
+                    {
+                        this.UrlsSeen.Add(url.uri.AbsoluteUri);
+                        this.URLQueue.Enqueue(url);
+                    }
+                }
 
                 Log.EngueuedURL(link);
             }
@@ -113,7 +108,7 @@ namespace Weaver
 
         private void Download(string link)
         {
-            this.visitedURLs.Add(link);
+            this.UrlsSeen.Add(link);
             Thread.Sleep(SpiderController.ThreadIdleTime);
 
             Uri uri = new Uri(link);

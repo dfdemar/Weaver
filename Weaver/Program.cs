@@ -12,7 +12,7 @@ namespace Weaver
     {
         static void Main(string[] args)
         {
-            string url = "http://ski-ffy.blogspot.com/";
+            string url = "http://www.tim-white.co.uk/pages/picturegallery01.html";
 
             if (String.IsNullOrEmpty(url))
             {

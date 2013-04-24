@@ -9,9 +9,9 @@ namespace Weaver
 {
     class NetworkConnection
     {
-        public string Go(string url)
+        public string Go(Url url)
         {
-            return ReadPage(GetResponse(url));
+            return ReadPage(GetResponse(url.uri.AbsoluteUri));
         }
 
         private HttpWebResponse GetResponse(string url)
