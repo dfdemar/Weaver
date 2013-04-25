@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -21,11 +20,17 @@ namespace Weaver
             this.threadCount = 0;
         }
 
-        public void Go(string link)
+        public void Go()
         {
-            Url url = new Url(link, 0);
-            this.UrlsSeen.Add(url.uri.AbsoluteUri);
-            ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
+            foreach (string seed in SpiderController.SeedURLs)
+            {
+                Url url = new Url(seed, 0);
+                this.UrlsSeen.Add(seed);
+                ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
+            }
+
+            if (SpiderController.SeedURLs.Count == 0)
+                Console.WriteLine("Need at least one seed URL.");
         }
 
         private void FetchNewPage(Url url)
@@ -72,7 +77,7 @@ namespace Weaver
 
                 if (SpiderController.ShouldContinue(url.depth))
                 {
-                    Thread.Sleep(SpiderController.ThreadIdleTime);
+                    Thread.Sleep(SpiderController.IdleTime());
                     ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
                 }
             }
@@ -81,43 +86,28 @@ namespace Weaver
 
         private void HandleURL(Url url)
         {
-            string link = url.uri.AbsoluteUri;
+            string link = url.uri.AbsoluteUri.ToLower();
 
             if (this.UrlsSeen.Contains(link))
                 Log.SkippedThisQueuedURL(link);
             else if (SpiderController.IsExcludedDomain(link))
                 Log.SkippedThisExcludedURL(link);
-            else if (SpiderController.IsExcludedFileType(link.ToLower()))
+            else if (SpiderController.IsExcludedFileType(link))
                 Log.SkippedThisExcludedFileType(link);
-            else if (SpiderController.ShouldDownload(link.ToLower()))
-                Download(link);
+            else if (SpiderController.ShouldDownload(link))
+            {
+                this.UrlsSeen.Add(link);
+                url.Download();
+            }
             else
             {
                 lock (this.URLQueue)
                 {
-                    lock (this.UrlsSeen)
-                    {
-                        this.UrlsSeen.Add(url.uri.AbsoluteUri);
-                        this.URLQueue.Enqueue(url);
-                    }
+                    this.UrlsSeen.Add(link);
+                    this.URLQueue.Enqueue(url);
                 }
 
                 Log.EngueuedURL(link);
-            }
-        }
-
-        private void Download(string link)
-        {
-            this.UrlsSeen.Add(link);
-            Thread.Sleep(SpiderController.ThreadIdleTime);
-
-            Uri uri = new Uri(link);
-            string filename = Path.GetFileName(uri.LocalPath);
-
-            using (WebClient client = new WebClient())
-            {
-                client.DownloadFileAsync(uri, @"C:\Temp\Spider\" + filename);
-                Log.DownloadedFile(link);
             }
         }
     }

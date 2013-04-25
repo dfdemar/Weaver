@@ -12,17 +12,10 @@ namespace Weaver
     {
         static void Main(string[] args)
         {
-            string url = "http://www.tim-white.co.uk/pages/picturegallery01.html";
-
-            if (String.IsNullOrEmpty(url))
-            {
-                Console.WriteLine("Need a URL.");
-                Console.ReadLine();
-                return;
-            }
-
             Spider spider = new Spider();
-            spider.Go(url);
+            spider.Go();
+
+            Console.WriteLine("Spider finished.");
             Console.ReadLine();
         }
     }

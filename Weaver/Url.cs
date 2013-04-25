@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Weaver
 {
@@ -24,6 +27,19 @@ namespace Weaver
         {
             this.uri = uri;
             this.depth = depth;
+        }
+
+        public void Download()
+        {
+            Thread.Sleep(SpiderController.IdleTime());
+
+            string filename = Path.GetFileName(this.uri.LocalPath);
+
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadFileAsync(this.uri, SpiderController.DownloadFolder + filename);
+                Log.DownloadedFile(this.uri.AbsoluteUri);
+            }
         }
     }
 }

@@ -11,13 +11,14 @@ namespace Weaver
         public Url url { get; private set; }
         public string source { get; private set; }
         public List<Url> UrlList { get; private set; }
-        public static Regex URLPATTERN = new Regex(@"(href)=""[\d\w\/:#@%;$\(\)~_\?\+\-=\\\.&]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        public static Regex URLPATTERN = new Regex(@"(href|src)=""[\d\w\/:#@%;$\(\)~_\?\+\-=\\\.&]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public Page(Url url, string source)
         {
             this.url = url;
             this.source = source;
-            UrlList = new List<Url>();
+            this.UrlList = new List<Url>();
         }
 
         public void FetchAllUrls(int depth)
@@ -44,7 +45,7 @@ namespace Weaver
             string cleanUrl = String.Empty;
 
             if(!url.Contains("mailto:"))
-                cleanUrl = Regex.Replace(url, @"[Hh]ref=|""", "");
+                cleanUrl = Regex.Replace(url, @"(href|src)=|""", "");
 
             return cleanUrl;
         }

@@ -5,12 +5,14 @@
   <!ATTLIST setting id ID #REQUIRED>
 ]>
 <configuration>
-  <setting id="MaximumDepth">2</setting>
+  <setting id="MaximumDepth">3</setting>
   <setting id="MaximumThreads">10</setting>
   <setting id="UseLogging">True</setting>
-  <setting id="ThreadIdleTime">5000</setting>
+  <setting id="MinThreadIdleTime">5000</setting>
+  <setting id="MaxThreadIdleTime">10000</setting>
+  <setting id="DownloadFolder">C:\Temp\Spider\</setting>
   <setting id="FileTypesToDownload">.jpg|.jpeg|.png</setting>
-  <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.ico|.flv|.gif|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.torrent|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
+  <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.exe|.ico|.flv|.gif|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.torrent|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
   <setting id="ExcludedDomains">
     google.com
     facebook.com
@@ -29,5 +31,11 @@
     stackoverflow.com
     thepiratebay.se
     amazon.com
+  </setting>
+  <setting id="SeedURLs">
+    http://www.urbanmedium.com/
+    http://www.areyougeneric.org/
+    http://tenminutemedia.com/
+    http://www.2xy.org/
   </setting>
 </configuration>
