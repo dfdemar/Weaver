@@ -11,13 +11,12 @@ namespace Weaver
     {
         private Queue<Url> URLQueue { get; set; }
         private HashSet<String> UrlsSeen { get; set; }
-        private int threadCount { get; set; }
 
         public Spider()
         {
             this.URLQueue = new Queue<Url>();
             this.UrlsSeen = new HashSet<String>();
-            this.threadCount = 0;
+            ThreadPool.SetMaxThreads(SpiderController.MaxThreads, SpiderController.MaxThreads);
         }
 
         public void Go()
@@ -35,7 +34,7 @@ namespace Weaver
 
         private void FetchNewPage(Url url)
         {
-            Log.ThreadCount(++threadCount);
+            Log.WriteToLog("Fetching page...", url.uri.AbsoluteUri);
 
             NetworkConnection connection = new NetworkConnection();
             Page page = new Page(url, connection.Go(url));
@@ -81,7 +80,6 @@ namespace Weaver
                     ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
                 }
             }
-            --threadCount;
         }
 
         private void HandleURL(Url url)
@@ -90,6 +88,8 @@ namespace Weaver
 
             if (this.UrlsSeen.Contains(link))
                 Log.SkippedThisQueuedURL(link);
+            else if (SpiderController.UseWhiteList == true && !SpiderController.IsWhiteListedDomain(url.uri.Authority))
+                Log.WriteToLog("URL domain not on whitelist", link);
             else if (SpiderController.IsExcludedDomain(link))
                 Log.SkippedThisExcludedURL(link);
             else if (SpiderController.IsExcludedFileType(link))

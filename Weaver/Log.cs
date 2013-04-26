@@ -19,12 +19,14 @@ namespace Weaver
         public static void WriteToLog(string entry, string url = "")
         {
             Console.WriteLine("[{0}]: {1}: {2}", DateTime.Now, entry, url);
-            string line = String.Format("{0,-25}{1,-40}{2}", "["+DateTime.Now+"]", entry, url);
 
             if (SpiderController.UseLogging)
             {
-                lock(file)
+                lock (file)
+                {
+                    string line = String.Format("{0,-25}{1,-40}{2}", "[" + DateTime.Now + "]", entry, url);
                     File.AppendAllText(path + file, line + Environment.NewLine);
+                }
             }
         }
 
@@ -61,11 +63,6 @@ namespace Weaver
         public static void EngueuedURL(string url)
         {
             WriteToLog("Queuing", url);
-        }
-
-        public static void ThreadCount(int count)
-        {
-            WriteToLog(String.Format("Threads running: {0}", count));
         }
 
         public static void DownloadedFile(string filename)

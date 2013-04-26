@@ -5,9 +5,10 @@
   <!ATTLIST setting id ID #REQUIRED>
 ]>
 <configuration>
-  <setting id="MaximumDepth">3</setting>
-  <setting id="MaximumThreads">10</setting>
+  <setting id="MaximumDepth">4</setting>
+  <setting id="MaximumThreads">50</setting>
   <setting id="UseLogging">True</setting>
+  <setting id="UseWhiteList">True</setting>
   <setting id="MinThreadIdleTime">5000</setting>
   <setting id="MaxThreadIdleTime">10000</setting>
   <setting id="DownloadFolder">C:\Temp\Spider\</setting>
@@ -32,10 +33,10 @@
     thepiratebay.se
     amazon.com
   </setting>
+  <setting id="WhiteListedDomains">
+    isfdb.org
+  </setting>
   <setting id="SeedURLs">
-    http://www.urbanmedium.com/
-    http://www.areyougeneric.org/
-    http://tenminutemedia.com/
-    http://www.2xy.org/
+    http://www.isfdb.org/cgi-bin/ea.cgi?21349
   </setting>
 </configuration>

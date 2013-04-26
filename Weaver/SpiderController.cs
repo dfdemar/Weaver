@@ -13,12 +13,14 @@ namespace Weaver
         public static int MaxDepth { get; private set; }
         public static int MaxThreads { get; private set; }
         public static bool UseLogging { get; private set; }
+        public static bool UseWhiteList { get; private set; }
         public static int MinThreadIdleTime { get; private set; }
         public static int MaxThreadIdleTime { get; private set; }
         public static string DownloadFolder { get; private set; }
 
         public static List<string> ExcludedFileTypes { get; private set; }
         public static List<string> ExcludedDomains { get; private set; }
+        public static List<string> WhiteListedDomains { get; private set; }
         public static List<string> FileTypesToDownload { get; private set; }
         public static List<string> SeedURLs { get; private set; }
 
@@ -30,15 +32,16 @@ namespace Weaver
             MaxDepth = Int32.Parse(xmlDoc.GetElementById("MaximumDepth").InnerText);
             MaxThreads = Int32.Parse(xmlDoc.GetElementById("MaximumThreads").InnerText);
             UseLogging = Boolean.Parse(xmlDoc.GetElementById("UseLogging").InnerText);
+            UseWhiteList = Boolean.Parse(xmlDoc.GetElementById("UseWhiteList").InnerText);
             MinThreadIdleTime = Int32.Parse(xmlDoc.GetElementById("MinThreadIdleTime").InnerText);
             MaxThreadIdleTime = Int32.Parse(xmlDoc.GetElementById("MaxThreadIdleTime").InnerText);
             DownloadFolder = xmlDoc.GetElementById("DownloadFolder").InnerText;
 
             ExcludedFileTypes = xmlDoc.GetElementById("ExcludedFileTypes").InnerText.Split('|').ToList<string>();
             ExcludedDomains = xmlDoc.GetElementById("ExcludedDomains").InnerText.Split(new char[]{',',' ', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            WhiteListedDomains = xmlDoc.GetElementById("WhiteListedDomains").InnerText.Split(new char[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
             FileTypesToDownload = xmlDoc.GetElementById("FileTypesToDownload").InnerText.Split('|').ToList<string>();
-            SeedURLs = xmlDoc.GetElementById("SeedURLs").InnerText.Split(new char[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
-            
+            SeedURLs = xmlDoc.GetElementById("SeedURLs").InnerText.Split(new char[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();   
         }
 
         public static bool ShouldContinue(int currentDepth)
@@ -114,6 +117,27 @@ namespace Weaver
         {
             Random random = new Random();
             return random.Next(MinThreadIdleTime, MaxThreadIdleTime + 1);
+        }
+
+        public static bool IsWhiteListedDomain(string domain)
+        {
+            bool isWhiteListed = false;
+
+            lock (WhiteListedDomains)
+            {
+                foreach (string wlDomain in WhiteListedDomains)
+                {
+                    if(domain.StartsWith("www."))
+                        domain = domain.Remove(0, 4);
+
+                    if (domain == wlDomain)
+                    {
+                        isWhiteListed = true;
+                        break;
+                    }
+                }
+            }
+            return isWhiteListed;
         }
     }
 }
