@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spider.cs" />
     <Compile Include="SpiderController.cs" />
+    <Compile Include="ThreadManager.cs" />
     <Compile Include="Url.cs" />
   </ItemGroup>
   <ItemGroup>

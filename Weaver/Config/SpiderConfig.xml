@@ -6,7 +6,7 @@
 ]>
 <configuration>
   <setting id="MaximumDepth">4</setting>
-  <setting id="MaximumThreads">50</setting>
+  <setting id="MaximumThreads">7</setting>
   <setting id="UseLogging">True</setting>
   <setting id="UseWhiteList">True</setting>
   <setting id="MinThreadIdleTime">5000</setting>
@@ -34,6 +34,7 @@
     amazon.com
   </setting>
   <setting id="WhiteListedDomains">
+    bordel.haghn.com
     isfdb.org
   </setting>
   <setting id="SeedURLs">

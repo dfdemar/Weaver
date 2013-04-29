@@ -12,7 +12,7 @@ namespace Weaver
         public string source { get; private set; }
         public List<Url> UrlList { get; private set; }
 
-        public static Regex URLPATTERN = new Regex(@"(href|src)=""[\d\w\/:#@%;$\(\)~_\?\+\-=\\\.&]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex URLPATTERN = new Regex(@"(href|src)=""[\d\w\/:#@%;$\(\)~_\?\+\-=\\\.&]*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public Page(Url url, string source)
         {
@@ -31,7 +31,7 @@ namespace Weaver
 
                 if (!String.IsNullOrEmpty(cleanUrl))
                 {
-                    Uri uri = new Uri(GetParentUriString(this.url.uri), cleanUrl);
+                    Uri uri = new Uri(cleanUrl);
                     Url url = new Url(uri, depth + 1);
 
                     UrlList.Add(url);
@@ -40,17 +40,50 @@ namespace Weaver
             }
         }
 
-        public string CleanUrl(string url)
+        private string CleanUrl(string url)
         {
-            string cleanUrl = String.Empty;
+            StringBuilder cleanUrl = new StringBuilder(String.Empty);
 
-            if(!url.Contains("mailto:"))
-                cleanUrl = Regex.Replace(url, @"(href|src)=|""", "");
+            if (!url.Contains("mailto:"))
+            {
+                try
+                {
+                    cleanUrl.Append(Regex.Replace(url, @"(href|src)=|""", ""));
 
-            return cleanUrl;
+                    Uri uri;
+
+                    if (!IsAbsoluteUrl(cleanUrl.ToString()))
+                    {
+                        if (cleanUrl.ToString().StartsWith("/"))
+                            uri = new Uri(GetParentUriString(this.url.uri), cleanUrl.ToString());
+                        else
+                            uri = new Uri(this.url.uri.AbsoluteUri + "/" + cleanUrl.ToString());
+                    }
+                    else
+                        uri = new Uri(cleanUrl.ToString());
+
+                    UriBuilder uriBuilder = new UriBuilder(uri);
+                    uriBuilder.Fragment = String.Empty;
+
+                    cleanUrl.Clear();
+                    cleanUrl.Append(uriBuilder.Uri.AbsoluteUri);
+                }
+                catch (UriFormatException ex)
+                {
+                    Console.WriteLine(ex.Message, url);
+                }
+            }
+
+            return cleanUrl.ToString();
         }
 
-        public Uri GetParentUriString(Uri uri)
+        private bool IsAbsoluteUrl(string url)
+        {
+            Uri result;
+            return Uri.TryCreate(url, UriKind.Absolute, out result); 
+        }
+
+        private Uri GetParentUriString(Uri uri)
         {
             string path = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
             return new Uri(path);

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Weaver
@@ -35,9 +36,18 @@ namespace Weaver
 
             string filename = Path.GetFileName(this.uri.LocalPath);
 
+            UriBuilder uri = new UriBuilder(this.uri.AbsoluteUri);
+            string path = SpiderController.DownloadFolder + Regex.Replace(Path.GetDirectoryName(uri.Path), "/", @"\");
+
+            if(!path.EndsWith(@"\"))
+                path += @"\";
+
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
             using (WebClient client = new WebClient())
             {
-                client.DownloadFileAsync(this.uri, SpiderController.DownloadFolder + filename);
+                client.DownloadFileAsync(this.uri, path + filename);
                 Log.DownloadedFile(this.uri.AbsoluteUri);
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -9,14 +10,16 @@ namespace Weaver
 {
     public class Spider
     {
+        private ThreadManager threadManager { get; set; }
+
         private Queue<Url> URLQueue { get; set; }
         private HashSet<String> UrlsSeen { get; set; }
 
         public Spider()
         {
+            this.threadManager = new ThreadManager();
             this.URLQueue = new Queue<Url>();
             this.UrlsSeen = new HashSet<String>();
-            ThreadPool.SetMaxThreads(SpiderController.MaxThreads, SpiderController.MaxThreads);
         }
 
         public void Go()
@@ -25,7 +28,7 @@ namespace Weaver
             {
                 Url url = new Url(seed, 0);
                 this.UrlsSeen.Add(seed);
-                ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
+                threadManager.LaunchThread(FetchNewPage, url);
             }
 
             if (SpiderController.SeedURLs.Count == 0)
@@ -66,6 +69,9 @@ namespace Weaver
         {
             while (this.URLQueue.Count > 0)
             {
+                if (threadManager.ThreadList.Count >= SpiderController.MaxThreads)
+                    break;
+
                 Url url = new Url();
 
                 lock (this.URLQueue)
@@ -77,9 +83,10 @@ namespace Weaver
                 if (SpiderController.ShouldContinue(url.depth))
                 {
                     Thread.Sleep(SpiderController.IdleTime());
-                    ThreadPool.QueueUserWorkItem(obj => FetchNewPage(url));
+                    threadManager.LaunchThread(FetchNewPage, url);
                 }
             }
+            threadManager.KillThread();
         }
 
         private void HandleURL(Url url)
