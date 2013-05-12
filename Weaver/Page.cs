@@ -57,7 +57,7 @@ namespace Weaver
                         if (cleanUrl.ToString().StartsWith("/"))
                             uri = new Uri(GetParentUriString(this.url.uri), cleanUrl.ToString());
                         else
-                            uri = new Uri(this.url.uri.AbsoluteUri + "/" + cleanUrl.ToString());
+                            uri = new Uri(this.url.uri.AbsoluteUri + cleanUrl.ToString());
                     }
                     else
                         uri = new Uri(cleanUrl.ToString());

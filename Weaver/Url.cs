@@ -37,10 +37,10 @@ namespace Weaver
             string filename = Path.GetFileName(this.uri.LocalPath);
 
             UriBuilder uri = new UriBuilder(this.uri.AbsoluteUri);
-            string path = SpiderController.DownloadFolder + Regex.Replace(Path.GetDirectoryName(uri.Path), "/", @"\");
+            string path = SpiderController.DownloadFolder + Regex.Replace(Path.GetDirectoryName(uri.Path), "/", "\\");
 
-            if(!path.EndsWith(@"\"))
-                path += @"\";
+            if(!path.EndsWith("\\"))
+                path += "\\";
 
             if(!Directory.Exists(path))
                 Directory.CreateDirectory(path);

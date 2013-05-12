@@ -34,10 +34,9 @@
     amazon.com
   </setting>
   <setting id="WhiteListedDomains">
-    bordel.haghn.com
-    isfdb.org
+    cnn.com
   </setting>
   <setting id="SeedURLs">
-    http://www.isfdb.org/cgi-bin/ea.cgi?21349
+    http://www.cnn.com/
   </setting>
 </configuration>
