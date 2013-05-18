@@ -48,7 +48,7 @@ namespace Weaver
             {
                 try
                 {
-                    cleanUrl.Append(Regex.Replace(url, @"(href|src)=|""", ""));
+                    cleanUrl.Append(Regex.Replace(url, @"(?i)(href|src)=|""", ""));
 
                     Uri uri;
 

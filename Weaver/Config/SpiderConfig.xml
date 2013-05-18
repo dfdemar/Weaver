@@ -5,15 +5,65 @@
   <!ATTLIST setting id ID #REQUIRED>
 ]>
 <configuration>
-  <setting id="MaximumDepth">4</setting>
-  <setting id="MaximumThreads">7</setting>
+  <!--WARNING: READ THIS BEFORE MODIFYING THIS FILE!!!!
+  
+      This web crawler does not respect robots.txt so be very careful when changing these
+      settings. The crawler has the potential to run extremely fast and make hundreds
+      of HTTP requests to a web server a second. Many of the settings in this file are
+      for the purpose of throttling the crawler's speed significantly in order to prevent
+      strain on web servers. Allowing the crawler to run unthrottled may result in getting
+      blocked from websites and/or complaints to your ISP. Please be respectful.
+      
+      Please also be aware that changing these settings incorrectly may cause the crawler
+      to misbehave or, most likely, not function at all.-->
+  
+  <setting id="MaximumDepth">0</setting>
+  <!--MaximumDepth refers to the link depth from the root page that should be crawled. 
+      For example, if MaximumDepth is set to 0 then only the root URL will be crawled. 
+      If MaximumDepth is set to 1 then the root URL will be crawled along with every URL
+      found on the root page. Setting the depth higher than 3 or 4 without using a
+      whitelist may cause the crawler to queue tens of thousands of web pages and run for 
+      a very long time.-->
+  
+  <setting id="MaximumThreads">10</setting>
+  <!--MaximumThreads refers to the maximum number of crawling processes that should run
+      concurrently. It is recommended that this number be kept very low (i.e. below 10)
+      to avoid putting strain on the web servers of the sites being crawled.-->
+  
   <setting id="UseLogging">True</setting>
+  <!--Set UseLogging to True to generate a log file for the crawling session. Otherwise
+      set to False. Console output is not affected by this setting.-->
+  
   <setting id="UseWhiteList">True</setting>
+  <!--Set UseWhiteList to True to restrict the crawler to crawling *only* the domains listed
+      under WhiteListedDomains. Any URL with a domain not on the white list will be skipped.-->
+  
   <setting id="MinThreadIdleTime">5000</setting>
   <setting id="MaxThreadIdleTime">10000</setting>
+  <!--MinThreadIdleTime and MaxThreadIdleTime are used to throttle the crawler. A thread will
+      sleep for a random period of time between the minimum and maximum times before fetching 
+      a new page and before downloading a file. Time is in milliseconds.-->
+
   <setting id="DownloadFolder">C:\Temp\Spider\</setting>
+  <!--The location on the hard drive where downloaded files will be saved.-->
+
+  <setting id="LogFolder">C:\Temp\</setting>
+  <!--The location on the hard drive where log file will be saved.-->
+  
   <setting id="FileTypesToDownload">.jpg|.jpeg|.png</setting>
+  <!--List the file types the crawler should download here. File types listed should be in this
+      format using "|" as a delimiter: 
+      
+      .jpg|.mp3|.pdf
+  -->
+  
   <setting id="ExcludedFileTypes">.asx|.css|.doc|.docx|.exe|.ico|.flv|.gif|.mid|.mov|.mp3|.ogg|.pdf|.ppt|.swf|.torrent|.txt|.wav|.wma|.wmv|.xls|.xlsx|.xml|.zip|.mov</setting>
+  <!--List the file types the crawler should ignore here. File types listed should be in this
+      format using "|" as a delimiter: 
+      
+      .jpg|.mp3|.pdf
+  -->
+  
   <setting id="ExcludedDomains">
     google.com
     facebook.com
@@ -30,13 +80,39 @@
     cnn.com
     goodreads.com
     stackoverflow.com
-    thepiratebay.se
+    thepiratebay.sx
     amazon.com
   </setting>
+  <!--List the domains crawler should ignore here. Any URL with a domain listed here will be skipped.
+      URLs should be in this format: 
+      
+    google.com
+    facebook.com
+    
+      Each domain should be indented and seperated by a new line. Do not include "www".-->
+  
   <setting id="WhiteListedDomains">
-    cnn.com
+    example.com
+    anotherexample.com
   </setting>
+  <!--List the domains crawler should *only* visit here. Any URL with a domain listed here will be 
+      skipped if the UseWhiteList setting is set to True.
+      URLs should be in this format: 
+      
+    google.com
+    facebook.com
+    
+      Each domain should be properly indented and seperated by a new line. Do not include "www".-->
+  
   <setting id="SeedURLs">
-    http://www.cnn.com/
+    http://www.example.com
+    http://www.anotherexample.com
   </setting>
+  <!--Seed URLs go here. These are the root URLs the crawler will visit first. They will always be 
+      visited even if the domain is not on the white list or it is an excluded domain. The *entire* URL
+      is required and should be formatted like this:
+      
+    http://www.google.com
+    http://www.facebook.com 
+    -->
 </configuration>

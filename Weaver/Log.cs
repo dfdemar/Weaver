@@ -9,11 +9,12 @@ namespace Weaver
     public static class Log
     {
         private static string file { get; set; }
-        private static string path = "C:\\temp\\";
+        private static string path { get; set; }
 
         static Log()
         {
             file = "SpiderLog.txt";
+            path = SpiderController.LogFolder;
         }
 
         public static void WriteToLog(string entry, string url = "")

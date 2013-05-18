@@ -26,7 +26,7 @@ namespace Weaver
         {
             foreach (string seed in SpiderController.SeedURLs)
             {
-                Url url = new Url(seed, 0);
+                Url url = new Url(seed, -1);
                 this.UrlsSeen.Add(seed);
                 threadManager.LaunchThread(FetchNewPage, url);
             }

@@ -17,6 +17,7 @@ namespace Weaver
         public static int MinThreadIdleTime { get; private set; }
         public static int MaxThreadIdleTime { get; private set; }
         public static string DownloadFolder { get; private set; }
+        public static string LogFolder { get; set; }
 
         public static List<string> ExcludedFileTypes { get; private set; }
         public static List<string> ExcludedDomains { get; private set; }
@@ -36,6 +37,7 @@ namespace Weaver
             MinThreadIdleTime = Int32.Parse(xmlDoc.GetElementById("MinThreadIdleTime").InnerText);
             MaxThreadIdleTime = Int32.Parse(xmlDoc.GetElementById("MaxThreadIdleTime").InnerText);
             DownloadFolder = xmlDoc.GetElementById("DownloadFolder").InnerText;
+            LogFolder = xmlDoc.GetElementById("LogFolder").InnerText;
 
             ExcludedFileTypes = xmlDoc.GetElementById("ExcludedFileTypes").InnerText.Split('|').ToList<string>();
             ExcludedDomains = xmlDoc.GetElementById("ExcludedDomains").InnerText.Split(new char[]{',',' ', '\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
