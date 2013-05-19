@@ -36,19 +36,19 @@
   
   <setting id="UseWhiteList">True</setting>
   <!--Set UseWhiteList to True to restrict the crawler to crawling *only* the domains listed
-      under WhiteListedDomains. Any URL with a domain not on the white list will be skipped.-->
+      under WhiteListedDomains. Any URL with a domain not on the whitelist will be skipped.-->
   
   <setting id="MinThreadIdleTime">5000</setting>
   <setting id="MaxThreadIdleTime">10000</setting>
   <!--MinThreadIdleTime and MaxThreadIdleTime are used to throttle the crawler. A thread will
-      sleep for a random period of time between the minimum and maximum times before fetching 
+      sleep for a random period of time between the minimum and maximum idle times before fetching 
       a new page and before downloading a file. Time is in milliseconds.-->
 
   <setting id="DownloadFolder">C:\Temp\Spider\</setting>
   <!--The location on the hard drive where downloaded files will be saved.-->
 
   <setting id="LogFolder">C:\Temp\</setting>
-  <!--The location on the hard drive where log file will be saved.-->
+  <!--The location on the hard drive where the log file will be saved.-->
   
   <setting id="FileTypesToDownload">.jpg|.jpeg|.png</setting>
   <!--List the file types the crawler should download here. File types listed should be in this
@@ -89,27 +89,27 @@
     google.com
     facebook.com
     
-      Each domain should be indented and seperated by a new line. Do not include "www".-->
+      Each domain should be indented and seperated by a new line. Do not include "http://www".-->
   
   <setting id="WhiteListedDomains">
     example.com
     anotherexample.com
   </setting>
-  <!--List the domains crawler should *only* visit here. Any URL with a domain listed here will be 
-      skipped if the UseWhiteList setting is set to True.
+  <!--List the domains the crawler should *only* visit here. Any URL with a domain not listed here will 
+      be skipped if the UseWhiteList setting is set to True.
       URLs should be in this format: 
       
     google.com
     facebook.com
     
-      Each domain should be properly indented and seperated by a new line. Do not include "www".-->
+      Each domain should be properly indented and seperated by a new line. Do not include "http://www".-->
   
   <setting id="SeedURLs">
     http://www.example.com
     http://www.anotherexample.com
   </setting>
   <!--Seed URLs go here. These are the root URLs the crawler will visit first. They will always be 
-      visited even if the domain is not on the white list or it is an excluded domain. The *entire* URL
+      visited even if the domain is not on the whitelist or is an excluded domain. The *entire* URL
       is required and should be formatted like this:
       
     http://www.google.com
